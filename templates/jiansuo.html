@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block txt %}
+    <!--查询表单-->
+    <div style="padding: 0 60px">
+        <div class="layui-form-item" style="width: 800px">
+            <div class="layui-input-block">
+                <form action="../jiansuo/" method="get" name="find">
+                    {% csrf_token %}
+                    <input id="title" type="text" name="title" required lay-verify="required" placeholder="请输入书名"
+                           autocomplete="off"
+                           class="layui-input" value="{{ bookname }}" style="width:600px;display: inline-block"/>
+                    <input type="submit" class="layui-btn" value="查询"/>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--展示的表格-->
+    <table class="table table-striped" id="showtable">
+        <thead>
+        <th>编号</th>
+        <th>名称</th>
+        <th>购买</th>
+
+        </thead>
+        <tbody>
+        {% for book in bookList %}
+
+            <tr>
+                <td class="yi"></td>
+                <td>{{ book.name }}</td>
+                <td><a href="{{ book.url }}" target="_blank" class="btn btn-info">点击购买</a></td>
+
+            </tr>
+            </tbody>
+        {% endfor %}
+    </table>
+
+    <!--添加分页查询-->
+    <div id="demo7"></div>
+    <!-- 分页导航-->
+    <script>
+        layui.use(['laypage', 'layer'], function () {
+            var laypage = layui.laypage
+                , layer = layui.layer;
+            laypage.render({
+                elem: 'demo7'
+                , count: {{ count }}
+                , curr:{{ currpage }}
+                , layout: ['count', 'prev', 'page', 'next', 'skip']
+                , jump: function (obj) {
+                    if (obj.curr != {{ currpage }}) {
+                            let bookname = $('#title').val();
+                        if (bookname == "" || bookname == null) {
+                            window.location.href = "/jiansuo/?currpage=" + obj.curr
+                        } else {
+                            window.location.href = "/jiansuo/?currpage=" + obj.curr + "&title=" + bookname
+                        }
+
+                    }
+                }
+            });
+
+        })
+
+        $(function () {
+            var  showtable=document.getElementById("showtable")
+            var rows = showtable.rows.length
+            console.log(rows)
+            for ( var index = 1; index <= rows; index++) {
+                var showtable_t= showtable.getElementsByTagName("tr")[index].getElementsByTagName("td")[0]
+                console.log(showtable_t)
+                showtable_t.innerHTML=index
+             }
+        })
+
+    </script>
+    <div style="float: left;margin-top: 30px">
+        <!--分页条-->
+
+    </div>
+
+{% endblock %}
