@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Books</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    {#    全局的{% load static %}#}
+    {% load static %}
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="{% static "jquery-3.3.1.min.js" %}"></script>
+    {#   引入layui.css#}
+    {#  引入layui.all.js#}
+    <link rel="stylesheet" href="{% static "layui/css/layui.css" %}" media="all">
+    <script src="{% static "layui/layui.all.js" %}"></script>
+    <script src="{% static "layui/layui.js" %}"></script>
+    <!-- Bootstrap -->
+    <link href="{% static "bootstrap/css/bootstrap.css" %}" rel="stylesheet">
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="{% static "bootstrap/js/bootstrap.js" %}"></script>
+    <style type="text/css">
+    </style>
+</head>
+<body>
+<div style="margin: 20px auto;width:100%;height:60px;background-color: #009486;text-align: center;"><h1
+        style="line-height:60px;color: white">图书信息管理系统</h1></div>
+<div class="container">
+    <div style="margin: 20px auto;">
+        <ul class="nav nav-tabs" id="ul_title">
+            <li role="presentation"><a href="/findAll/">图书信息管理</a></li>
+            <li role="presentation"><a href="/jiansuo/">图书信息检索</a></li>
+            <li role="presentation"><a href="/help/">获取帮助</a></li>
+        </ul>
+    </div>
+    {% block txt %}
+    {% endblock %}
+</div>
+<script>
+    $(function () {
+        var index = 0
+        $("#showtable").find("tr").each(function () {
+            if (index != 0) {
+                $(this).find('td:eq(0)').html(index)
+                console.log()
+            }
+            index++;
+        })
+        let url_string = window.location.href
+        url_string = "/" + url_string.split("/")[3] + "/"
+        $("#ul_title li").each(function () {
+            let a_href = $(this).find("a").attr("href")
+            console.log(a_href)
+            if (url_string == a_href) {
+                $(this).addClass("active")
+            } else {
+                $(this).removeClass()
+            }
+        })
+    })
+</script>
+</body>
+</html>

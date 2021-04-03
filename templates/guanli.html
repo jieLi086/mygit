@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% block txt %}
+    <div id="cintainer">   <!--查询表单-->
+        <div style="padding: 0 60px">
+            <div class="layui-form-item" style="width: 800px">
+                <div class="layui-input-block">
+                    <form action="../findAll/" method="get" name="find">
+                        {% csrf_token %}
+                        <input id="title" type="text" name="title" required lay-verify="required" placeholder="请输入书名"
+                               autocomplete="off"
+                               class="layui-input" value="{{ bookname }}" style="width:600px;display: inline-block"/>
+                        <input type="submit" class="layui-btn" value="查询"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--展示的表格-->
+        <table class="table table-striped" id="showtable">
+            <thead>
+            <th>编号</th>
+            <th>名称</th>
+            <th>地址</th>
+            <th>操作</th>
+            </thead>
+            <tbody>
+            {% for book in bookList %}
+                <tr>
+                    <td class="yi"></td>
+                    <td>{{ book.name }}</td>
+                    <td><a href="{{ book.url }}">{{ book.url }}</a></td>
+                    <td style="width: 175px">
+                        <div class="layui-btn-group" id="layerDemo">
+                            {#                                <button type="button" class="layui-btn">增加</button>#}
+                            <button type="button" data-method="offset" data-type="auto"
+                                    class="layui-btn layui-btn-normal" data-bookid="{{ book.id }}"
+                                    data-bookname="{{ book.name }}" data-bookurl="{{ book.url }}"><a
+                                    style="color: white" id="upd">编辑</a></button>
+                            <button type="button" data-method="offset" data-type="auto"
+                                    class="layui-btn layui-btn-danger" data-bookname="{{ book.name }}"
+                                    data-bookurl="{{ book.url }}" data-bookid="{{ book.id }}" onclick="del({{ book }})">
+                                <a
+
+                                        style="color: white">删除</a>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            {% endfor %}
+        </table>
+        <!--添加分页查询-->
+        <div id="demo7"></div>
+        <!-- 分页导航-->
+    </div>
+    <script>
+        var bookitem = null
+        function del(item) {
+            bookitem = item
+        }
+        layui.use('layer', function () { //独立版的layer无需执行这一句
+            var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+            var active = {
+                offset: function (othis) {
+                    var type = othis.data('type')
+                        , bookid = othis.data('bookid')
+                    layer.open({
+                        type: 0
+                        ,
+                        area: ['600px', '300px']
+                        ,
+                        title: '是否删除图书？'
+                        ,
+                        curr:{{ currpage }}
+                        ,
+                        offset: type
+                        ,
+                        id: 'layerDemo' + type //防止重复弹出
+                        ,
+                        content: '<div style="padding: 20px 10px; width: 600px; height: 100px;"><form class="layui-form">' +
+                            '<div class="layui-form-item">' +
+
+                            '<label class="layui-form-label">书名:</label><input id="updataName" type="text"  value="' + bookitem.name + '" style="width: 400px"  class="layui-input" disabled/>' +
+                            '<div class="layui-input-block"></div></div>' +
+                            '<label class="layui-form-label">地址:</label><input type="text"  id="updateUrl" value="' + bookitem.url + '" style="width: 400px"  class="layui-input" disabled/></form></div>'
+                        ,
+                        btn: ['确定', '取消']
+                        ,
+
+                        btnAlign: 'c' //按钮居中
+                        ,
+                        shade: 0//显示显示遮罩
+                        ,
+                        yes: function () {
+                            var booktitle = document.getElementById("title").value
+
+                            console.log(bookid)
+                            var urlString = "/d/?bookid=" + bookid + "&curr=" + {{ currpage }}+"&title=" + booktitle
+                            console.log(urlString)
+                            window.location.href = urlString
+                            layer.closeAll()
+                            layer.alert('删除成功');
+                            {#window.history.go(-1)#}
+                            window.location.go(-1)
+                        }
+                    });
+                }
+            }
+            $('#layerDemo .layui-btn-danger').on('click', function () {
+                var othis = $(this), method = othis.data('method');
+                active[method] ? active[method].call(this, othis) : '';
+            });
+        })
+        layui.use('layer', function () { //独立版的layer无需执行这一句
+            var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+            var active = {
+                offset: function (othis) {
+                    var type = othis.data('type')
+                        , bookname = othis.data('bookname')
+                        , bookurl = othis.data('bookurl')
+                        , bookid = othis.data('bookid')
+                    layer.open({
+                        type: 0
+                        ,
+                        area: ['600px', '300px']
+                        ,
+                        title: '修改图书'
+                        ,
+                        curr:{{ currpage }}
+                        ,
+                        offset: type
+                        ,
+                        id: 'layerDemo' + type //防止重复弹出
+                        ,
+                        content: '<div style="padding: 20px 10px; width: 600px; height: 100px;"><form class="layui-form">' +
+                            '<div class="layui-form-item">' +
+
+                            '<label class="layui-form-label">书名:</label><input id="updataName" type="text"  value="' + bookname + '" style="width: 400px"  class="layui-input"/>' +
+                            '<div class="layui-input-block"></div></div>' +
+                            '<label class="layui-form-label">地址:</label><input type="text"  id="updateUrl" value="' + bookurl + '" style="width: 400px"  class="layui-input"/></form></div>'
+                        ,
+                        btn: ['确定', '取消']
+                        ,
+                        btnAlign: 'c' //按钮居中
+                        ,
+                        shade: 0//显示显示遮罩
+                        ,
+                        yes: function () {
+                            var updataName = document.getElementById("updataName").value
+                            var updateUrl = document.getElementById("updateUrl").value
+                            var booktitle = document.getElementById("title").value
+                            var urlString = "/u/?bookid=" + bookid + "&bookname=" + updataName + "&bookurl=" + updateUrl + "&curr=" + {{ currpage }}+"&title=" + booktitle
+                            console.log(urlString)
+                            window.location.href = urlString
+                            layer.closeAll()
+                        }
+                    });
+                }
+            }
+            $('#layerDemo .layui-btn-normal').on('click', function () {
+                var othis = $(this), method = othis.data('method');
+                active[method] ? active[method].call(this, othis) : '';
+            });
+        })
+        layui.use('laypage', function () {
+            var laypage = layui.laypage
+                , layer = layui.layer;
+            laypage.render({
+                elem: 'demo7'
+                , count: {{ count }}
+                , curr:{{ currpage }}
+                , layout: ['count', 'prev', 'page', 'next', 'skip']
+                , jump: function (obj) {
+                    if (obj.curr != {{ currpage }}) {
+                        let bookname = $('#title').val();
+                        if (bookname == "" || bookname == null) {
+                            window.location.href = "/findAll/?currpage=" + obj.curr
+                        } else {
+                            window.location.href = "/findAll/?currpage=" + obj.curr + "&title=" + bookname
+                        }
+                    }
+                }
+            });
+        })
+
+    </script>
+{% endblock %}
